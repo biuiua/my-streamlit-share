@@ -1,7 +1,25 @@
 import streamlit as st
 from supabase import create_client, Client
 import re
-
+st.markdown(
+    """
+    <style>
+    /* Приховуємо всю верхню панель (іконку GitHub, кнопку Fork та меню) */
+    [data-testid="stHeader"] {
+        display: none !important;
+    }
+    /* Приховуємо нижній підпис "Made with Streamlit" */
+    footer {
+        visibility: hidden !important;
+    }
+    /* За бажанням: прибираємо зайвий відступ зверху, який залишається після зникнення панелі */
+    .block-container {
+        padding-top: 2rem !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 BUCKET_NAME = "user-files"
 
 # Проста функція для транслітерації українських літер в англійські
