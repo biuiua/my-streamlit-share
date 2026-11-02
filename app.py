@@ -30,12 +30,12 @@ if uploaded_file is not None:
     if st.button("🚀 Надіслати у сховище"):
         with st.spinner("Завантаження файлу на сервер..."):
             try:
-                # Надсилаємо файл у бакет Supabase
-                response = supabase.storage.from_(BUCKET_NAME).upload(
-                    path=file_name,
-                    file=file_bytes,
-                    file_options={"cache-control": "3600", "upsert": "true"}
-                )
+                storage_client = supabase.storage
+                response = storage_client.from_(BUCKET_NAME).upload(
+                path=file_name,
+                file=file_bytes,
+                file_options={"cache-control": "3600", "upsert": "true"}
+)
                 st.success(f"🎉 Файл '{file_name}' успішно завантажено! Тепер він доступний в адмінці.")
             except Exception as e:
                 st.error(f"❌ Помилка при завантаженні: {e}")
