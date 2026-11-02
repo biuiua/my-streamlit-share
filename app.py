@@ -18,9 +18,7 @@ def transliterate(text: str) -> str:
         'Ф': 'F', 'Х': 'Kh', 'Ц': 'Ts', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Shch', 'Ь': '',
         'Ю': 'Yu', 'Я': 'Ya'
     }
-    # Замінюємо кирилицю на латиницю
     trans_text = "".join(rules.get(c, c) for c in text)
-    # Додатково замінюємо пробіли та специфічні символи на підкреслення
     trans_text = re.sub(r'[^a-zA-Z0-9._-]', '_', trans_text)
     return trans_text
 
@@ -33,28 +31,26 @@ def init_supabase() -> Client:
 try:
     supabase = init_supabase()
 except Exception as e:
-    st.error("Помилка конфігурації. Перевірте секрети в налаштуваннях Streamlit.")
+    st.error("Config error")
     st.stop()
 
-st.title("📁 Глобальне сховище файлів")
-st.write("Завантажуйте файли будь-якого формату. Вони будуть надійно збережені в хмарі Supabase.")
+st.title("Download")
+st.write("Ready.")
 
-uploaded_file = st.file_uploader("Оберіть файл для завантаження", type=None)
+uploaded_file = st.file_uploader("Pick a file", type=None)
 
 if uploaded_file is not None:
     file_bytes = uploaded_file.read()
-    
-    # Перетворюємо назву файлу (наприклад, "про.txt" стане "pro.txt")
     safe_name = transliterate(uploaded_file.name)
     
-    if st.button("🚀 Надіслати у сховище"):
-        with st.spinner("Завантаження файлу на сервер..."):
+    if st.button("Send->"):
+        with st.spinner("Uploading..."):
             try:
                 response = supabase.storage.from_(BUCKET_NAME).upload(
                     path=safe_name,
                     file=file_bytes,
                     file_options={"cache-control": "3600", "upsert": "true"}
                 )
-                st.success(f"🎉 Файл '{uploaded_file.name}' успішно завантажено в сховище як '{safe_name}'!")
+                st.success(f"File '{uploaded_file.name}' is successfully uploaded as '{safe_name}'!")
             except Exception as e:
-                st.error(f"❌ Помилка при завантаженні: {e}")
+                st.error(f"Error while uploading: {e}")
